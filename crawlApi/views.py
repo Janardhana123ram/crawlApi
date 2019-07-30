@@ -26,17 +26,18 @@ def index(request,url=None,dept=None):
 	output.clear()
 	url = request.GET.get('name')
 	dept = request.GET.get('level')
-	r=requests.get(url,allow_redirects=False,headers=hdr)
+	r=fetchData(url)
 	if dept == '1':
 	  urls = re.findall(r'<loc>(.*?)</loc>',r.text)
 	  output.append(urls)
 	elif dept == '2':
-		r=fetchData(url)
-		links=re.findall(r'<loc>(.*?)</loc>|<image:loc>(.*?)</image:loc>',r.text) 	
-		output.append(links)
+		links=re.findall(r'<loc>(.*?)</loc>',r.text)
+		ilinks = re.findall(r'<image:loc>(.*?)</image:loc>',r.text)
+		out = links+ilinks
+		output.append(out)
 	elif dept=='3':
-	    im = requests.get(url,allow_redirects=False,headers=hdr)
 	    parser.img=[]
-	    parser.feed(im.text)
+	    parser.feed(r.text)
 	    output.append(img)
 	return HttpResponse(output)
+
