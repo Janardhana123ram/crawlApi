@@ -3,7 +3,9 @@ import re
 import requests
 from html.parser import HTMLParser
 from django.shortcuts import render
-
+from rest_framework.decorators import api_view # new
+from rest_framework.response import Response # new
+from rest_framework.reverse import reverse # new
 img=[]
 output=[]
 class Parser(HTMLParser):
@@ -22,6 +24,7 @@ def fetchData(link):
 	return data
 
 parser = Parser()
+@api_view(['GET'])
 def index(request,url=None,dept=None):
 	output.clear()
 	url = request.GET.get('name')
@@ -39,5 +42,5 @@ def index(request,url=None,dept=None):
 	    parser.img=[]
 	    parser.feed(r.text)
 	    output.append(img)
-	return HttpResponse(output)
+	return Response(output)
 
