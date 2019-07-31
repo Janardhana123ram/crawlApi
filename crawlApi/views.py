@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 import re
 import requests
+import json
 from html.parser import HTMLParser
 from django.shortcuts import render
 from rest_framework.decorators import api_view # new
@@ -42,5 +43,5 @@ def index(request,url=None,dept=None):
 	    parser.img=[]
 	    parser.feed(r.text)
 	    output.append(img)
-	return Response(output)
+	return Response(json.dumps({'result':output}))
 
