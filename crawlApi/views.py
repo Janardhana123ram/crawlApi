@@ -1,11 +1,13 @@
 from django.http import HttpResponse
 import re
 import requests
-from html.parser import HTMLParser
 from django.http import JsonResponse
+from html.parser import HTMLParser
+from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+
 result=[]
 class Parser(HTMLParser):
     def handle_starttag(self, tag, attrs):
@@ -24,25 +26,31 @@ def fetchData(link):
 
 parser = Parser()
 
+
 def index(request):
-	return HttpResponse("Access http://..../data/?name=''&level=''")
+	return HttpResponse("Please goto api ../data/?<url>&<level>")
 
 @api_view(['GET'])
 def get_urls(request,url=None,dept=None):
-	result.clear()
-	url = request.GET.get('name')
-	dept = request.GET.get('level')
-	r=fetchData(url)
-	if dept == '1':
-	  urls = re.findall(r'<loc>(.*?)</loc>',r.text)
-	  result.extend(urls)
-	elif dept == '2':
-		links=re.findall(r'<loc>(.*?)</loc>',r.text)
-		ilinks = re.findall(r'<image:loc>(.*?)</image:loc>',r.text)
-		urls = links+ilinks
-		result.extend(urls)
-	elif dept=='3':
-	    parser.result=[]
-	    parser.feed(r.text)
+	try:
+		result.clear()
+		url = request.GET.get('name')
+		dept = request.GET.get('level')
+		print(url)
+		r=fetchData(url)
+		if dept == '1':
+		  urls = re.findall(r'<loc>(.*?)</loc>',r.text)
+		  result.extend(urls)
+		elif dept == '2':
+			links=re.findall(r'<loc>(.*?)</loc>',r.text)
+			ilinks = re.findall(r'<image:loc>(.*?)</image:loc>',r.text)
+			result.extend(links+ilinks)
+		elif dept=='3':
+		    parser.result=[]
+		    parser.feed(r.text)
 	    
-	return JsonResponse({'urls': result})
+		return JsonResponse({'urls': result},status=200)
+	except Exception as e:
+		return JsonResponse({'urls': 'Bad Request'}, status=400)
+	
+	
