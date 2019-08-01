@@ -1,19 +1,16 @@
 from django.http import HttpResponse
 import re
 import requests
-import json
 from html.parser import HTMLParser
-from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-img=[]
-output=[]
+result=[]
 class Parser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag=="img":
-            img.append(dict(attrs)["src"])
+            result.append(dict(attrs)["src"])
 
 hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -26,23 +23,26 @@ def fetchData(link):
 	return data
 
 parser = Parser()
+
+def index(request):
+	return HttpResponse("Access http://..../data/?name=''&level=''")
+
 @api_view(['GET'])
-def index(request,url=None,dept=None):
-	output.clear()
+def get_urls(request,url=None,dept=None):
+	result.clear()
 	url = request.GET.get('name')
 	dept = request.GET.get('level')
 	r=fetchData(url)
 	if dept == '1':
 	  urls = re.findall(r'<loc>(.*?)</loc>',r.text)
-	  output.append(urls)
+	  result.extend(urls)
 	elif dept == '2':
 		links=re.findall(r'<loc>(.*?)</loc>',r.text)
 		ilinks = re.findall(r'<image:loc>(.*?)</image:loc>',r.text)
-		out = links+ilinks
-		output.append(out)
+		urls = links+ilinks
+		result.extend(urls)
 	elif dept=='3':
-	    parser.img=[]
+	    parser.result=[]
 	    parser.feed(r.text)
-	    output.append(img)
-	return JsonResponse({'urls': output})
-
+	    
+	return JsonResponse({'urls': result})
