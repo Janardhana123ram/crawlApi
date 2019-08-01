@@ -4,9 +4,10 @@ import requests
 import json
 from html.parser import HTMLParser
 from django.shortcuts import render
-from rest_framework.decorators import api_view # new
-from rest_framework.response import Response # new
-from rest_framework.reverse import reverse # new
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 img=[]
 output=[]
 class Parser(HTMLParser):
@@ -43,5 +44,5 @@ def index(request,url=None,dept=None):
 	    parser.img=[]
 	    parser.feed(r.text)
 	    output.append(img)
-	return Response(json.dumps({'result':output}))
+	return JsonResponse({'urls': output})
 

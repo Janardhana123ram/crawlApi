@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '_p58%pl6v4y!d2qnp+(mtk63i88kav
 #DEBUG = True
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 ALLOWED_HOSTS = ['warm-atoll-21342.herokuapp.com']
-#ALLOWED_HOSTS=[]
+# ALLOWED_HOSTS=[]
 
 # Application definition
 
