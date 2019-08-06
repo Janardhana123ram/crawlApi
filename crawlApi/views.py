@@ -35,7 +35,7 @@ def get_urls(request,url=None,dept=None):
 	try:
 		result.clear()
 		url = request.GET.get('name')
-		dept = request.GET.get('level')
+		dept = request.GET['level']
 		print(url)
 		r=fetchData(url)
 		if dept == '1':
